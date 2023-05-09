@@ -1,0 +1,113 @@
+DROP TABLE client CASCADE CONSTRAINTS;
+DROP TABLE order1 CASCADE CONSTRAINTS;
+DROP TABLE basket CASCADE CONSTRAINTS;
+DROP TABLE order1Detail CASCADE CONSTRAINTS;
+DROP TABLE product CASCADE CONSTRAINTS;
+
+DROP SEQUENCE order1_seq;
+DROP SEQUENCE order1Detail_seq;
+DROP SEQUENCE product_seq;
+DROP SEQUENCE basket_seq;
+
+CREATE TABLE client (
+	clientID	varchar(8)		NOT NULL,
+	name		varchar(100)		NOT NULL,
+	addr		varchar(100)	NOT NULL,
+	contact	varchar(100)		NOT NULL
+);
+
+
+CREATE TABLE order1 (
+	order1ID		int			NOT NULL,
+	clientID	varchar(8)		NOT NULL,
+	price		float	NOT NULL,
+	status	varchar(50)		NOT NULL,
+	payMethod	varchar(100)		NOT NULL,
+	addrInfo	varchar(100)	NOT NULL
+);
+
+
+CREATE TABLE product (	
+	productID	int			NOT NULL,
+	name		varchar(100)		NOT NULL,
+	price		FLOAT		NOT NULL,
+	origin	varchar(20)		NOT NULL,
+	harvestDate	date			NOT NULL,
+	producer	varchar(100)		NOT NULL,
+	weight	FLOAT		NOT NULL
+);
+
+CREATE TABLE order1Detail (
+	order1DetailID	int		NOT NULL,
+	order1ID		int		NOT NULL,
+	productID	int		NOT NULL
+);
+
+CREATE TABLE basket (
+	basketID		int			NOT NULL,
+	clientID	varchar(100)		NOT NULL,
+	productID	int			NOT NULL
+);
+
+
+
+ALTER TABLE CLIENT ADD PRIMARY KEY(clientID);
+
+ALTER TABLE order1 ADD PRIMARY KEY(order1ID);
+
+ALTER TABLE product ADD PRIMARY KEY(productID);
+ALTER TABLE product ADD CHECK (price > 0);
+
+ALTER TABLE order1Detail ADD PRIMARY KEY(order1DetailID);
+
+ALTER TABLE basket ADD PRIMARY KEY(clientID, productID);
+
+
+
+ALTER TABLE order1 ADD FOREIGN KEY (clientID) REFERENCES client (clientID);
+
+
+ALTER TABLE order1Detail ADD FOREIGN KEY (order1ID) REFERENCES order1 (order1ID);
+
+ALTER TABLE order1Detail ADD FOREIGN KEY (productID) REFERENCES product (productID);
+
+
+ALTER TABLE basket ADD FOREIGN KEY (clientID) REFERENCES client (clientID);
+
+ALTER TABLE basket ADD FOREIGN KEY (productID) REFERENCES product (productID);
+
+
+CREATE SEQUENCE basket_seq
+    INCREMENT BY 1
+    START WITH 1;
+
+CREATE SEQUENCE order1_seq
+    INCREMENT BY 1
+    START WITH 1;
+
+CREATE SEQUENCE order1Detail_seq
+    INCREMENT BY 1
+    START WITH 1;
+
+CREATE SEQUENCE product_seq
+    INCREMENT BY 100
+    START WITH 100;
+
+
+INSERT INTO client VALUES ('user01', '이나은', '동작구', '010-0000-0000');
+INSERT INTO client VALUES ('user02', '서지영', '영등포구', '010-0000-0000');
+INSERT INTO client VALUES ('user03', '장은정', '양천구', '010-0000-0000');
+INSERT INTO client VALUES ('user04', '조현손', '영등포구', '010-0000-0000');
+
+INSERT INTO order1 VALUES (order1_seq.NEXTVAL,'user01',40000,'결제 완료','card','동작구');
+INSERT INTO order1 VALUES (order1_seq.NEXTVAL,'user02',20000,'배송 완료','cash','영등포구');
+
+INSERT INTO product VALUES (product_seq.NEXTVAL,'오렌지', 20000.0, '미국', TO_DATE('2023-04-27', 'YYYY-MM-DD'), 'james', 1000);
+INSERT INTO product VALUES (product_seq.NEXTVAL,'포도', 10000.0, '한국', TO_DATE('2023-04-28', 'YYYY-MM-DD'), '이말숙', 1000);
+
+INSERT INTO order1Detail VALUES (order1Detail_seq.NEXTVAL,1, 100);
+INSERT INTO order1Detail VALUES (order1Detail_seq.NEXTVAL,2, 100);
+
+
+INSERT INTO basket VALUES (basket_seq.NEXTVAL,'user03',200);
+INSERT INTO basket VALUES (basket_seq.NEXTVAL,'user04',100);
